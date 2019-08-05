@@ -1,7 +1,7 @@
 import React ,{Component} from 'react'
 
 const defaultStyle={
-  color:'#fff'
+  color:'white'
 }
 class Aggregate extends Component{
   render(){
