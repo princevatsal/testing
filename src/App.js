@@ -19,7 +19,7 @@ const fakeServerData={
     },
     {
       name:'hiphop',
-      songs:[{name:'Dj Wale Babu',duration:1000},{name:'mercy',duration:1400},{name:'braro',duration:1333}]
+      songs:[{name:'Dj',duration:1000},{name:'mercy',duration:1400},{name:'braro',duration:1333}]
     }]
   }
 }
@@ -51,7 +51,7 @@ class Filter extends Component{
     return(
       <div style={{...defaultStyle,textAlign:'center',margin:'20px 5px'}}>
         <img/>
-        <input type="text"/>
+        <input type="text" onKeyUp={event=>this.props.onTextChange(event.target.value)}/>
         Filter
       </div>
       )
@@ -77,7 +77,7 @@ render(){
 class main extends Component{
   constructor(){
     super()
-    this.state={serverData:{}}
+    this.state={serverData:{},filterString:''}
   }
   componentDidMount(){
     setTimeout(()=>{this.setState({serverData:fakeServerData})},1000)
@@ -90,8 +90,10 @@ class main extends Component{
         <h1 style={{textAlign:'center',fontSize:'40px',color:'white'}}>{this.state.serverData.user.name }'s Playlist</h1>
         <PlaylistCounter playlists={this.state.serverData.user && this.state.serverData.user.playlists}/>
         <HoursCounter playlists={this.state.serverData.user && this.state.serverData.user.playlists}/>
-        <Filter/>
-        {this.state.serverData.user.playlists.map(playlist=><Playlist playlist={playlist}/>)}
+        <Filter onTextChange={text=>{this.setState({filterString:text})}}/>
+        {this.state.serverData.user.playlists
+          .filter(playlist=>playlist.name.toLowerCase().includes(this.state.filterString.toLowerCase()))
+          .map(playlist=><Playlist playlist={playlist}/>)}
       </div>:<h1 style={{color:'white',textAlign:'center'}}>'Loading...'</h1>
     }
     </div>
