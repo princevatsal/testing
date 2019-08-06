@@ -25,8 +25,7 @@ const fakeServerData={
 }
 class PlaylistCounter extends Component{
   render(){
-    console.log('hello',this.props.playlists && this.props.playlists.length)
-    return(
+      return(
       <div style={{width:'50%',display:'inline-block'}}>
         <h2 style={defaultStyle}>{this.props.playlists.length} playlists</h2>
       </div>
@@ -40,7 +39,6 @@ class HoursCounter extends Component{
     },[])
     let totaltime=allSongs.reduce((sum,item)=>{return sum+=item.duration
     },0)
-    console.log('hello',this.props.playlists && this.props.playlists.length)
     return(
       <div style={{width:'50%',display:'inline-block'}}>
         <h2 style={defaultStyle}>{Math.round(totaltime/60)} Hours</h2>
@@ -62,13 +60,14 @@ class Filter extends Component{
 
 class Playlist extends Component{
 render(){
+  let playlist=this.props.playlist
   return(
   <div style={{color:'white',width:'25%',display:'inline-block'}}>
-    <h3>playlist Name</h3>
+    <h3>{playlist.name}</h3>
     <ul>
-      <li>Song 1</li>
-      <li>Song 2</li>
-      <li>Song 3</li>
+      {
+        playlist.songs.map(song=><li>{song.name}</li>)
+      }
     </ul>
   </div>
   )
@@ -92,10 +91,7 @@ class main extends Component{
         <PlaylistCounter playlists={this.state.serverData.user && this.state.serverData.user.playlists}/>
         <HoursCounter playlists={this.state.serverData.user && this.state.serverData.user.playlists}/>
         <Filter/>
-        <Playlist/>
-        <Playlist/>
-        <Playlist/>
-        <Playlist/>
+        {this.state.serverData.user.playlists.map(playlist=><Playlist playlist={playlist}/>)}
       </div>:<h1 style={{color:'white',textAlign:'center'}}>'Loading...'</h1>
     }
     </div>
