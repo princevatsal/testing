@@ -1,5 +1,5 @@
 import React ,{Component} from 'react'
-
+import queryString from 'query-string'
 const defaultStyle={
   color:'white'
 }
@@ -9,17 +9,6 @@ const fakeServerData={
     playlists:[{
       name:'my favo',
       songs:[{name:'brazil',duration:1300},{name:'jattti',duration:1900},{name:'yarri',duration:2333}]
-    },{
-      name:'punajbi',
-      songs:[{name:'kamli',duration:13000},{name:'jaan',duration:1100},{name:'pagol',duration:2033}]
-    },
-    {
-      name:'old',
-      songs:[{name:'pyar',duration:5000},{name:'aahsan',duration:1000},{name:'sanam',duration:6333}]
-    },
-    {
-      name:'hiphop',
-      songs:[{name:'Dj',duration:1000},{name:'mercy',duration:1400},{name:'braro',duration:1333}]
     }]
   }
 }
@@ -63,6 +52,7 @@ render(){
   let playlist=this.props.playlist
   return(
   <div style={{color:'white',width:'25%',display:'inline-block'}}>
+    <img src={playlist.imageUrl} style={{width:'160px'}} />
     <h3>{playlist.name}</h3>
     <ul>
       {
@@ -80,16 +70,41 @@ class main extends Component{
     this.state={serverData:{},filterString:''}
   }
   componentDidMount(){
-    setTimeout(()=>{this.setState({serverData:fakeServerData})},1000)
+    let parsed=queryString.parse(window.location.search)
+    let acess_token=parsed.access_token
+    if(!acess_token){
+      return
+    }
+    fetch('https://api.spotify.com/v1/me/',
+      {headers:{Authorization:' Bearer '+acess_token}})
+        .then(response=>response.json())
+          .then(data=>{
+            this.setState({user:{name:data.display_name}})
+          })
+    fetch('https://api.spotify.com/v1/me/playlists',
+      {headers:{Authorization:' Bearer '+acess_token}})
+        .then(response=>response.json())
+          .then(data=>{
+            console.log(data.items)
+            this.setState({
+              
+                  playlists:data.items.map(playlist=>({name:playlist.name,songs:[],imageUrl:playlist.images[0].url}))
+              
+              })
+          })
   }
   render(){
-    let playlisttorender=this.state.serverData.user?this.state.serverData.user.playlists.filter(playlist=>playlist.name.toLowerCase().includes(this.state.filterString.toLowerCase())):[]
+    let playlisttorender=this.state.user && this.state.playlists
+      ?this.state.playlists.filter(playlist=>
+        playlist.name.toLowerCase()
+          .includes(this.state.filterString.toLowerCase()))
+      :[]
     return(
     <div>
-    {this.state.serverData.user ? 
+    {this.state.user ? 
       <div style={{padding:'5px 70px'}}>
         <h1 style={{textAlign:'center',fontSize:'40px',color:'white'}}>
-            {this.state.serverData.user.name }'s Playlist
+            {this.state.user.name }'s Playlist
         </h1>
         <PlaylistCounter 
             playlists={playlisttorender}
@@ -98,10 +113,22 @@ class main extends Component{
           playlists={playlisttorender}
         />
         <Filter onTextChange={text=>{this.setState({filterString:text})}}/>
-        {this.state.serverData.user.playlists
-          .filter(playlist=>playlist.name.toLowerCase().includes(this.state.filterString.toLowerCase()))
-          .map(playlist=><Playlist playlist={playlist}/>)}
-      </div>:<h1 style={{color:'white',textAlign:'center'}}>'Loading...'</h1>
+      
+        {playlisttorender.map(playlist=><Playlist playlist={playlist}/>)}
+      </div>:
+        <button onClick={()=>
+          {window.location='http://localhost:8888/login'}} 
+          style={
+            {border:'none',
+            fontSize:'20px',
+            textAlign:'center',
+            padding:'20px',
+            background:'white',
+            width:'300px',
+            margin:' 5% 34%'}
+          }>
+          Sign With Spotify
+        </button>
     }
     </div>
     )
