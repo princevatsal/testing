@@ -117,7 +117,7 @@ class main extends Component{
         {playlisttorender.map(playlist=><Playlist playlist={playlist}/>)}
       </div>:
         <button onClick={()=>
-          {window.location='http://localhost:8888/login'}} 
+          {window.location= window.location.href.includes('localhost')?'http://localhost:8888/login':'https://my-playlist.herokuapp.com/login'}} 
           style={
             {border:'none',
             fontSize:'20px',
