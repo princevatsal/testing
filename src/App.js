@@ -109,8 +109,7 @@ class main extends Component{
   render(){
     let playlisttorender=this.state.user && this.state.playlists
       ?this.state.playlists.filter(playlist=>
-        playlist.name.toLowerCase()
-          .includes(this.state.filterString.toLowerCase()))
+        playlist.name.toLowerCase().includes(this.state.filterString.toLowerCase()) || playlist.songs.reduce((check,song)=>song.name.toLowerCase().includes(this.state.filterString.toLowerCase())||check,false))
       :[]
     return(
     <div>
