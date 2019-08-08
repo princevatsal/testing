@@ -84,14 +84,27 @@ class main extends Component{
     fetch('https://api.spotify.com/v1/me/playlists',
       {headers:{Authorization:' Bearer '+acess_token}})
         .then(response=>response.json())
-          .then(data=>{
-            console.log(data.items)
+          .then(playlists=>{
+            let promises=playlists.items.map(playlist=>{
+              return fetch(playlist.tracks.href,
+                {headers:{Authorization:' Bearer '+acess_token}})
+                        .then(resp=>resp.json())
+            })
+            Promise.all(promises)
+              .then(arrayofplaylists=>{
+                  var songsbeaddedinplaylists=arrayofplaylists.map(playlist=>playlist.items.map(song=>({
+                    name:song.track.name,
+                    duration:song.track.duration_ms/1000
+                  })))
+                  let cool= playlists.items.map((playlist,i)=>{playlist.songs=songsbeaddedinplaylists[i];return playlist})
+                  return cool
+              }).then(data=>{
             this.setState({
-              
-                  playlists:data.items.map(playlist=>({name:playlist.name,songs:[],imageUrl:playlist.images[0].url}))
-              
-              })
+                  playlists:data.map(playlist=>({name:playlist.name,songs:playlist.songs,imageUrl:playlist.images[0].url}))
+                        })
+           })
           })
+          
   }
   render(){
     let playlisttorender=this.state.user && this.state.playlists
