@@ -3,15 +3,6 @@ import queryString from 'query-string'
 const defaultStyle={
   color:'white'
 }
-const fakeServerData={
-  user:{
-    name:'Priyansh',
-    playlists:[{
-      name:'my favo',
-      songs:[{name:'brazil',duration:1300},{name:'jattti',duration:1900},{name:'yarri',duration:2333}]
-    }]
-  }
-}
 class PlaylistCounter extends Component{
   render(){
       return(
@@ -54,7 +45,7 @@ render(){
   <div style={{color:'white',width:'25%',display:'inline-block'}}>
     <img src={playlist.imageUrl} style={{width:'160px'}} />
     <h3>{playlist.name}</h3>
-    <ul>
+    <ul style={{listStyleType:'none',paddingLeft:'0px'}}>
       {
         playlist.songs.map(song=><li>{song.name}</li>)
       }
